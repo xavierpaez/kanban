@@ -1,0 +1,124 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/fredoka';
+@import '@fontsource/luckiest-guy/latin-400.css';
+
+@theme static {
+  --font-sans: 'Fredoka Variable', ui-rounded, system-ui, sans-serif;
+  --font-display: 'Luckiest Guy', 'Fredoka Variable', ui-rounded, system-ui, sans-serif;
+
+  --color-space-950: #0b0920;
+  --color-space-900: #130f33;
+  --color-space-800: #1d1748;
+  --color-ink: #15102e;
+  --color-card: #fffbef;
+
+  --color-portal: #97ce4c;
+  --color-portal-glow: #c8f57f;
+  --color-todo: #6fd6f7;
+  --color-doing: #ffd23f;
+  --color-done: #97ce4c;
+
+  --color-alive: #3fae4a;
+  --color-dead: #e5484d;
+  --color-unknown: #8b87a3;
+  /* Error text on light surfaces; darker than --color-dead to keep 4.5:1 contrast. */
+  --color-danger: #c22b31;
+
+  /* A few turns on load, then still; it spins again on hover. */
+  --animate-portal-spin: portal-spin 7s linear 3;
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+  --animate-pop-in: pop-in 450ms cubic-bezier(0.3, 1.5, 0.5, 1) both;
+
+  @keyframes portal-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      scale: 0.6;
+      rotate: -4deg;
+    }
+  }
+  @keyframes shimmer {
+    50% {
+      opacity: 0.55;
+    }
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    background-color: var(--color-space-950);
+  }
+
+  body {
+    /* Isolation lets the starfield below sit above the body background but behind the content. */
+    position: relative;
+    isolation: isolate;
+    min-height: 100dvh;
+    color: white;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    background-color: var(--color-space-950);
+    background-image:
+      radial-gradient(ellipse 60% 45% at 12% 0%, rgb(151 206 76 / 0.16), transparent 70%),
+      radial-gradient(ellipse 55% 50% at 92% 8%, rgb(132 94 247 / 0.28), transparent 70%),
+      radial-gradient(ellipse 70% 50% at 50% 110%, rgb(111 214 247 / 0.14), transparent 70%);
+    background-attachment: fixed;
+  }
+
+  /* A two-layer starfield drawn with gradients, so it costs no image requests. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(2px 2px at 24px 40px, white, transparent 60%),
+      radial-gradient(1.5px 1.5px at 130px 90px, rgb(255 255 255 / 0.85), transparent 60%),
+      radial-gradient(2px 2px at 200px 20px, rgb(200 245 127 / 0.9), transparent 60%),
+      radial-gradient(1.5px 1.5px at 80px 160px, rgb(255 255 255 / 0.75), transparent 60%),
+      radial-gradient(2px 2px at 170px 200px, rgb(111 214 247 / 0.9), transparent 60%),
+      radial-gradient(1px 1px at 300px 130px, white, transparent 60%),
+      radial-gradient(1.5px 1.5px at 260px 270px, rgb(255 255 255 / 0.8), transparent 60%);
+    background-size: 340px 320px;
+    opacity: 0.9;
+  }
+
+  /* Each column's color, used by its panel, cards, and controls. Set by attribute rather than an
+     inline style, so the Content Security Policy can forbid inline styles. */
+  [data-accent='todo'] {
+    --accent: var(--color-todo);
+  }
+  [data-accent='doing'] {
+    --accent: var(--color-doing);
+  }
+  [data-accent='done'] {
+    --accent: var(--color-done);
+  }
+
+  /* Keep the page still behind an open dialog. */
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-portal-glow);
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
